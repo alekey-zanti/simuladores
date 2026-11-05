@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador de operaciones combinadas</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1d2433;--mu:#5d667a;--ac:#3b5bdb;--ok:#2b8a3e;--okb:#e6f6ea;--ko:#c92a2a;--kob:#fdeaea;--bd:#d9deea;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171f;--card:#1e222d;--tx:#e8ebf3;--mu:#9aa3b8;--ac:#7c93ff;--ok:#69db7c;--okb:#17301f;--ko:#ff8787;--kob:#3a1c1c;--bd:#343a4b}}
+:root[data-theme="dark"]{--bg:#14171f;--card:#1e222d;--tx:#e8ebf3;--mu:#9aa3b8;--ac:#7c93ff;--ok:#69db7c;--okb:#17301f;--ko:#ff8787;--kob:#3a1c1c;--bd:#343a4b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.5}
+.w{max-width:680px;margin:0 auto;padding:20px 14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px}
+h1{font-size:1.2rem;margin:0 0 4px}.mu{color:var(--mu);font-size:.9rem}
+.bar{height:6px;background:var(--bd);border-radius:6px;margin:12px 0 16px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac);transition:width .3s}
+.ex{font-size:1.25rem;padding:16px 8px;overflow-x:auto;white-space:nowrap;text-align:center}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 2px;font-size:.85em;line-height:1.2}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.opt{font-size:1.1rem;padding:12px;border:1.5px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;cursor:pointer;min-height:56px}
+.opt:hover:not(:disabled){border-color:var(--ac)}
+.opt.ok{border-color:var(--ok);background:var(--okb)}.opt.ko{border-color:var(--ko);background:var(--kob)}
+.fb{margin-top:14px;padding:12px 14px;border-radius:10px}
+.fb.ok{background:var(--okb);color:var(--ok);font-weight:600}.fb.ko{background:var(--kob)}
+.fb h3{margin:0 0 6px;font-size:1rem;color:var(--ko)}
+.fb ol{margin:6px 0 0;padding-left:20px;color:var(--tx)}.fb li{margin:4px 0}
+.btn{margin-top:14px;padding:11px 20px;border:0;border-radius:10px;background:var(--ac);color:#fff;font-size:1rem;cursor:pointer}
+.big{font-size:3rem;font-weight:700;text-align:center;margin:10px 0}
+.hide{display:none}
+</style></head><body><div class="w"><div class="card" id="app"></div></div>
+<script>
+const F=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+const R=s=>s.replace(/~(-?\d+)\/(\d+)~/g,(m,a,b)=>F(a.replace('-','−'),b)).replace(/\^(\d)/g,'<sup>$1</sup>').replace(/-/g,'−');
+const EX=[
+{e:"{ (~1/2~)^3 · 16 − [ 1 − ( ~3/4~ − ~1/2~ ) ] ÷ ~3/2~ }",a:"3/2",s:["Paréntesis: ~3/4~ − ~1/2~ = ~3/4~ − ~2/4~ = ~1/4~","Corchetes: 1 − ~1/4~ = ~3/4~","Potencia: (~1/2~)^3 = ~1/8~","Multiplicación y división: ~1/8~ · 16 = 2  y  ~3/4~ ÷ ~3/2~ = ~3/4~ · ~2/3~ = ~1/2~","Resta: 2 − ~1/2~ = ~3/2~"]},
+{e:"{ (−2)^2 · ~1/3~ + [ ~5/6~ − ( ~1/2~ + ~1/6~ ) ] } ÷ 2",a:"3/4",s:["Paréntesis: ~1/2~ + ~1/6~ = ~3/6~ + ~1/6~ = ~2/3~","Corchetes: ~5/6~ − ~2/3~ = ~5/6~ − ~4/6~ = ~1/6~","Potencia y producto: (−2)^2 = 4;  4 · ~1/3~ = ~4/3~","Llaves: ~4/3~ + ~1/6~ = ~8/6~ + ~1/6~ = ~3/2~","División: ~3/2~ ÷ 2 = ~3/2~ · ~1/2~ = ~3/4~"]},
+{e:"3 − { (~2/5~)^2 ÷ ~4/25~ − [ 2 − ( 1 − ~1/3~ ) ] } · ~3/4~",a:"13/4",s:["Paréntesis: 1 − ~1/3~ = ~2/3~","Corchetes: 2 − ~2/3~ = ~6/3~ − ~2/3~ = ~4/3~","Potencia y división: (~2/5~)^2 = ~4/25~;  ~4/25~ ÷ ~4/25~ = 1","Llaves: 1 − ~4/3~ = ~-1/3~","Multiplicación: ~-1/3~ · ~3/4~ = ~-1/4~","Resta: 3 − (~-1/4~) = 3 + ~1/4~ = ~13/4~"]},
+{e:"[ (−1)^5 + ~3/2~ ] · (~2/3~)^2 ÷ ~1/3~ − ~5/6~",a:"-1/6",s:["Potencias: (−1)^5 = −1;  (~2/3~)^2 = ~4/9~","Corchetes: −1 + ~3/2~ = ~1/2~","Multiplicación y división (izq. a der.): ~1/2~ · ~4/9~ = ~2/9~;  ~2/9~ ÷ ~1/3~ = ~2/9~ · 3 = ~2/3~","Resta: ~2/3~ − ~5/6~ = ~4/6~ − ~5/6~ = ~-1/6~"]},
+{e:"2^3 ÷ { 5 − [ 3 − (~1/2~)^2 · 2 ] }",a:"16/5",s:["Potencias: 2^3 = 8;  (~1/2~)^2 = ~1/4~","Corchetes: ~1/4~ · 2 = ~1/2~;  3 − ~1/2~ = ~6/2~ − ~1/2~ = ~5/2~","Llaves: 5 − ~5/2~ = ~10/2~ − ~5/2~ = ~5/2~","División: 8 ÷ ~5/2~ = 8 · ~2/5~ = ~16/5~"]},
+{e:"(−~3/2~)^2 − { ~1/2~ + [ 4 − ( 3 − ~5/4~ ) ] ÷ 9 } · 4",a:"-3/4",s:["Paréntesis: 3 − ~5/4~ = ~12/4~ − ~5/4~ = ~7/4~","Corchetes: 4 − ~7/4~ = ~16/4~ − ~7/4~ = ~9/4~","Potencia: (−~3/2~)^2 = ~9/4~","Llaves: ~9/4~ ÷ 9 = ~1/4~;  ~1/2~ + ~1/4~ = ~3/4~","Multiplicación: ~3/4~ · 4 = 3","Resta: ~9/4~ − 3 = ~9/4~ − ~12/4~ = ~-3/4~"]},
+{e:"{ ~1/4~ − [ (−2)^3 ÷ 12 + ~1/3~ ] } · 2",a:"7/6",s:["Potencia: (−2)^3 = −8","Corchetes: −8 ÷ 12 = ~-2/3~;  ~-2/3~ + ~1/3~ = ~-1/3~","Llaves: ~1/4~ − (~-1/3~) = ~1/4~ + ~1/3~ = ~3/12~ + ~4/12~ = ~7/12~","Multiplicación: ~7/12~ · 2 = ~14/12~ = ~7/6~"]},
+{e:"6 · ( ~1/3~ − ~1/2~ )^2 + { ~1/2~ − [ 1 − ( ~1/2~ + ~1/3~ ) ] } ÷ ~1/2~",a:"5/6",s:["Paréntesis: ~1/3~ − ~1/2~ = ~2/6~ − ~3/6~ = ~-1/6~;  ~1/2~ + ~1/3~ = ~3/6~ + ~2/6~ = ~5/6~","Potencia: (~-1/6~)^2 = ~1/36~","Corchetes: 1 − ~5/6~ = ~1/6~","Llaves: ~1/2~ − ~1/6~ = ~3/6~ − ~1/6~ = ~1/3~","Multiplicación y división: 6 · ~1/36~ = ~1/6~;  ~1/3~ ÷ ~1/2~ = ~2/3~","Suma: ~1/6~ + ~2/3~ = ~1/6~ + ~4/6~ = ~5/6~"]},
+{e:"(−~1/2~)^3 ÷ ~1/4~ + [ 3 − ( 5 − ~7/2~ ) ] · ~2/3~ − ~3/4~",a:"-1/4",s:["Paréntesis: 5 − ~7/2~ = ~10/2~ − ~7/2~ = ~3/2~","Corchetes: 3 − ~3/2~ = ~3/2~","Potencia: (−~1/2~)^3 = ~-1/8~","Multiplicación y división: ~-1/8~ ÷ ~1/4~ = ~-1/2~;  ~3/2~ · ~2/3~ = 1","Suma y resta: ~-1/2~ + 1 − ~3/4~ = ~-2/4~ + ~4/4~ − ~3/4~ = ~-1/4~"]},
+{e:"{ 3^2 ÷ 6 − [ ~1/2~ · ( 4 − ~5/2~ ) ] } ÷ (~3/4~)^2",a:"4/3",s:["Paréntesis: 4 − ~5/2~ = ~8/2~ − ~5/2~ = ~3/2~","Corchetes: ~1/2~ · ~3/2~ = ~3/4~","Potencias: 3^2 = 9;  (~3/4~)^2 = ~9/16~","Llaves: 9 ÷ 6 = ~3/2~;  ~3/2~ − ~3/4~ = ~6/4~ − ~3/4~ = ~3/4~","División: ~3/4~ ÷ ~9/16~ = ~3/4~ · ~16/9~ = ~48/36~ = ~4/3~"]}
+];
+const g=(a,b)=>b?g(b,a%b):Math.abs(a);
+const fm=(n,d)=>{const k=g(n,d)||1;n/=k;d/=k;if(d<0){n=-n;d=-d}return n+'/'+d};
+const sh=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const show=v=>{const[n,d]=v.split('/');return R(d==='1'?n:`~${n}/${d}~`)};
+function opts(c){const[n,d]=c.split('/').map(Number);
+ const cand=[fm(-n,d),fm(n+d,d),fm(n-d,d),fm(n+1,d),fm(n,d*2),fm(n*2,d),fm(d,n||1),fm(n+d,d*2)];
+ const u=[...new Set(cand)].filter(x=>x!==c);
+ return sh([c,...sh(u).slice(0,3)])}
+let i=0,score=0,done=false;const app=document.getElementById('app');
+function start(){i=0;score=0;render()}
+function render(){
+ if(i>=EX.length)return end();
+ const x=EX[i];done=false;
+ app.innerHTML=`<h1>Operaciones combinadas</h1><div class="mu">Pregunta ${i+1} de ${EX.length} · Aciertos: ${score}</div>
+ <div class="bar"><i style="width:${i/EX.length*100}%"></i></div>
+ <div class="mu">Resuelve y elige la respuesta correcta:</div>
+ <div class="ex">${R(x.e)}</div>
+ <div class="opts">${opts(x.a).map(o=>`<button class="opt" data-v="${o}">${show(o)}</button>`).join('')}</div>
+ <div id="fb"></div>`;
+ app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(b));
+}
+function pick(b){
+ if(done)return;done=true;const x=EX[i],v=b.dataset.v,fb=document.getElementById('fb');
+ app.querySelectorAll('.opt').forEach(o=>{o.disabled=true;if(o.dataset.v===x.a)o.classList.add('ok')});
+ if(v===x.a){score++;fb.innerHTML=`<div class="fb ok">✅ ¡Respuesta correcta!</div>`}
+ else{b.classList.add('ko');fb.innerHTML=`<div class="fb ko"><h3>❌ Respuesta incorrecta</h3>La respuesta correcta es <b>${show(x.a)}</b>. Procedimiento:<ol>${x.s.map(s=>`<li>${R(s)}</li>`).join('')}</ol></div>`}
+ fb.innerHTML+=`<button class="btn" id="nx">${i==EX.length-1?'Ver mi nota final':'Siguiente'}</button>`;
+ document.getElementById('nx').onclick=()=>{i++;render()};
+}
+function end(){
+ const m=score>=9?'¡Excelente trabajo! 🏆':score>=7?'¡Muy bien! 👏':score>=5?'Vas bien, repasa los errores. 💪':'Sigue practicando, ¡tú puedes! 📘';
+ app.innerHTML=`<h1>Resultado final</h1><div class="bar"><i style="width:100%"></i></div>
+ <div class="big">${score} / ${EX.length}</div>
+ <p style="text-align:center">Aciertos: <b>${score}</b> · Errores: <b>${EX.length-score}</b><br>Nota: <b>${score} sobre ${EX.length}</b></p>
+ <p style="text-align:center">${m}</p><div style="text-align:center"><button class="btn" id="rs">Intentar de nuevo</button></div>`;
+ document.getElementById('rs').onclick=start;
+}
+start();
+</script></body></html>
