@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Álgebra: Productos Notables y Factor Común</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- MathJax for Rendering Beautiful Formulas -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' },
+            startup: {
+                ready: () => {
+                    MathJax.defaultReady();
+                }
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#0B192C',
+                            900: '#000F26',
+                        },
+                        royal: {
+                            500: '#2563EB',
+                            600: '#1D4ED8',
+                            700: '#1E40AF',
+                        },
+                        gold: {
+                            400: '#FBBF24',
+                            500: '#F59E0B',
+                            600: '#D97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0F172A;
+            color: #F8FAFC;
+        }
+        .option-btn {
+            transition: all 0.25s ease;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1E293B;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3B82F6;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-slate-950 text-slate-100">
+
+    <!-- Header Navigation -->
+    <header class="bg-navy-900 border-b border-slate-800 shadow-xl sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-tr from-royal-600 to-gold-500 p-2.5 rounded-xl shadow-lg">
+                    <i class="fa-solid me-1 fa-square-root-variable text-xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg md:text-xl text-white tracking-wide">Simulador de Álgebra</h1>
+                    <p class="text-xs text-gold-400 font-medium">Productos Notables & Factor Común</p>
+                </div>
+            </div>
+            <div id="header-stats" class="hidden md:flex items-center space-x-4 text-sm font-semibold">
+                <div class="bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-gold-400"></i>
+                    <span>Puntaje: <span id="header-score" class="text-royal-500">0</span>/30</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-4xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+
+        <!-- START SCREEN -->
+        <div id="start-screen" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-10 shadow-2xl text-center">
+            <div class="inline-flex items-center justify-center p-4 bg-royal-600/10 border border-royal-500/30 rounded-full mb-6">
+                <i class="fa-solid fa-graduation-cap text-4xl text-royal-500"></i>
+            </div>
+            <h2 class="text-2xl md:text-4xl font-extrabold text-white mb-4">Entrenamiento Algebraico Avanzado</h2>
+            <p class="text-slate-300 max-w-2xl mx-auto mb-8 text-sm md:text-base leading-relaxed">
+                Pone a prueba tus habilidades algebraicas en <strong>30 ejercicios interactivos nivel intermedio</strong> divididos en 6 bloques temáticos indispensables.
+            </p>
+
+            <!-- Topics Badges -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-2xl mx-auto mb-8 text-xs md:text-sm">
+                <div class="bg-slate-800/60 border border-slate-700/80 p-3 rounded-xl flex items-center justify-center gap-2 font-medium text-slate-200">
+                    <i class="fa-solid fa-layer-group text-gold-400"></i> Binomio al Cuadrado
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/80 p-3 rounded-xl flex items-center justify-center gap-2 font-medium text-slate-200">
+                    <i class="fa-solid fa-arrows-left-right text-royal-500"></i> Binomio Conjugado
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/80 p-3 rounded-xl flex items-center justify-center gap-2 font-medium text-slate-200">
+                    <i class="fa-solid fa-link text-emerald-400"></i> Término Común
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/80 p-3 rounded-xl flex items-center justify-center gap-2 font-medium text-slate-200">
+                    <i class="fa-solid fa-cube text-purple-400"></i> Binomio al Cubo
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/80 p-3 rounded-xl flex items-center justify-center gap-2 font-medium text-slate-200">
+                    <i class="fa-solid fa-shapes text-rose-400"></i> Trinomio al Cuadrado
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/80 p-3 rounded-xl flex items-center justify-center gap-2 font-medium text-slate-200">
+                    <i class="fa-solid fa-key text-cyan-400"></i> Factor Común
+                </div>
+            </div>
+
+            <button onclick="startQuiz()" class="w-full sm:w-auto bg-gradient-to-r from-royal-600 to-royal-700 hover:from-royal-500 hover:to-royal-600 text-white font-bold py-4 px-10 rounded-xl shadow-xl shadow-royal-600/30 transition-all duration-300 transform hover:-translate-y-0.5 text-lg">
+                <i class="fa-solid fa-play me-2 text-gold-400"></i> Iniciar Simulador
+            </button>
+        </div>
+
+        <!-- QUIZ CONTAINER -->
+        <div id="quiz-screen" class="hidden space-y-5">
+            
+            <!-- Progress Bar & Card Header -->
+            <div class="bg-slate-900 border border-slate-800 p-4 md:p-5 rounded-2xl shadow-xl space-y-3">
+                <div class="flex justify-between items-center text-sm font-semibold">
+                    <span id="topic-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-royal-600/20 text-royal-400 border border-royal-500/30">
+                        Bloque 1
+                    </span>
+                    <span class="text-slate-400 font-mono text-xs md:text-sm">Pregunta <span id="current-q-num" class="text-white font-bold">1</span> / 30</span>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-royal-600 to-gold-400 h-2.5 rounded-full transition-all duration-300" style="width: 3.33%"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 md:p-8 shadow-2xl space-y-6">
+                <div>
+                    <span class="text-xs text-gold-400 font-semibold uppercase tracking-wider block mb-1">Instrucción: Desarrolla o Factoriza</span>
+                    <h3 id="question-text" class="text-xl md:text-2xl font-bold text-white overflow-x-auto py-2">
+                        <!-- LaTeX question dynamically injected -->
+                    </h3>
+                </div>
+
+                <!-- Options Grid -->
+                <div id="options-container" class="grid grid-cols-1 gap-3.5">
+                    <!-- Options injected dynamically -->
+                </div>
+
+                <!-- Feedback Area (Initially Hidden) -->
+                <div id="feedback-card" class="hidden rounded-xl p-5 border transition-all duration-300 space-y-4">
+                    <div id="feedback-header" class="flex items-center gap-3 font-bold text-lg">
+                        <!-- Dynamic Icon & Title -->
+                    </div>
+                    <div id="feedback-body" class="text-sm md:text-base leading-relaxed text-slate-200 overflow-x-auto">
+                        <!-- Dynamic Explanation -->
+                    </div>
+                    <div class="pt-2 flex justify-end">
+                        <button id="next-btn" onclick="nextQuestion()" class="bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 px-6 rounded-lg border border-slate-600 transition flex items-center gap-2">
+                            <span>Siguiente</span>
+                            <i class="fa-solid fa-arrow-right text-gold-400"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULTS SCREEN -->
+        <div id="results-screen" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-10 shadow-2xl space-y-8">
+            <div class="text-center space-y-3">
+                <div id="result-icon-container" class="inline-flex p-4 rounded-full bg-gold-500/10 border border-gold-500/30 mb-2">
+                    <i id="result-icon" class="fa-solid fa-trophy text-4xl text-gold-400"></i>
+                </div>
+                <h2 class="text-3xl font-extrabold text-white">¡Simulador Completado!</h2>
+                <p id="result-assessment" class="text-lg font-semibold text-royal-400"></p>
+            </div>
+
+            <!-- Global Score Box -->
+            <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-6 text-center max-w-md mx-auto grid grid-cols-2 gap-4">
+                <div class="border-r border-slate-800">
+                    <span class="text-xs font-medium text-slate-400 block uppercase">Puntaje Final</span>
+                    <span id="final-score-text" class="text-3xl font-black text-white">0/30</span>
+                </div>
+                <div>
+                    <span class="text-xs font-medium text-slate-400 block uppercase">Porcentaje</span>
+                    <span id="final-percentage-text" class="text-3xl font-black text-gold-400">0%</span>
+                </div>
+            </div>
+
+            <!-- Breakdown by Category -->
+            <div class="space-y-4">
+                <h3 class="font-bold text-base md:text-lg text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-pie text-royal-500"></i> Desglose por Temas
+                </h3>
+                <div id="category-breakdown" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    <!-- Dynamic Breakdown cards -->
+                </div>
+            </div>
+
+            <div class="pt-4 flex justify-center">
+                <button onclick="resetQuiz()" class="bg-gradient-to-r from-royal-600 to-royal-700 hover:from-royal-500 hover:to-royal-600 text-white font-bold py-3.5 px-8 rounded-xl shadow-lg shadow-royal-600/30 transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-right text-gold-400"></i> Reiniciar Simulador
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-navy-900 border-t border-slate-800 py-4 text-center text-xs text-slate-400">
+        <div class="max-w-5xl mx-auto px-4">
+            Simulador Interactivo de Álgebra &bull; Verificación Matemática Rigurosa
+        </div>
+    </footer>
+
+    <!-- JavaScript Game Logic & Database -->
+    <script>
+        const questionsDB = [
+            // ==================== BLOQUE 1: BINOMIO AL CUADRADO ====================
+            {
+                id: 1,
+                category: "Binomio al Cuadrado",
+                question: "Desarrolla la expresión: (3x<sup>2</sup> - 4y<sup>3</sup>)<sup>2</sup>",
+                options: [
+                    "9x<sup>4</sup> - 12x<sup>2</sup>y<sup>3</sup> + 16y<sup>6</sup>",
+                    "9x<sup>4</sup> - 24x<sup>2</sup>y<sup>3</sup> + 16y<sup>6</sup>",
+                    "9x<sup>4</sup> + 24x<sup>2</sup>y<sup>3</sup> - 16y<sup>6</sup>",
+                    "6x<sup>4</sup> - 24x<sup>2</sup>y<sup>3</sup> + 8y<sup>6</sup>"
+                ],
+                correct: 1,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula del Binomio al Cuadrado: (a - b)<sup>2</sup> = a<sup>2</sup> - 2ab + b<sup>2</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Identificación:</strong> a = 3x<sup>2</sup>, b = 4y<sup>3</sup></li>
+                        <li><strong>Cuadrado del 1º término:</strong> (3x<sup>2</sup>)<sup>2</sup> = 9x<sup>4</sup></li>
+                        <li><strong>Doble del 1º por el 2º:</strong> 2 &middot; (3x<sup>2</sup>) &middot; (4y<sup>3</sup>) = 24x<sup>2</sup>y<sup>3</sup></li>
+                        <li><strong>Cuadrado del 2º término:</strong> (4y<sup>3</sup>)<sup>2</sup> = 16y<sup>6</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 9x<sup>4</sup> - 24x<sup>2</sup>y<sup>3</sup> + 16y<sup>6</sup></p>
+                `
+            },
+            {
+                id: 2,
+                category: "Binomio al Cuadrado",
+                question: "Desarrolla la expresión: (5a<sup>3</sup> + 2b<sup>2</sup>)<sup>2</sup>",
+                options: [
+                    "25a<sup>6</sup> + 20a<sup>3</sup>b<sup>2</sup> + 4b<sup>4</sup>",
+                    "25a<sup>6</sup> + 10a<sup>3</sup>b<sup>2</sup> + 4b<sup>4</sup>",
+                    "25a<sup>9</sup> + 20a<sup>3</sup>b<sup>2</sup> + 4b<sup>4</sup>",
+                    "10a<sup>6</sup> + 20a<sup>3</sup>b<sup>2</sup> + 4b<sup>4</sup>"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a + b)<sup>2</sup> = a<sup>2</sup> + 2ab + b<sup>2</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>1º Término al cuadrado:</strong> (5a<sup>3</sup>)<sup>2</sup> = 25a<sup>6</sup></li>
+                        <li><strong>Doble producto:</strong> 2 &middot; (5a<sup>3</sup>) &middot; (2b<sup>2</sup>) = 20a<sup>3</sup>b<sup>2</sup></li>
+                        <li><strong>2º Término al cuadrado:</strong> (2b<sup>2</sup>)<sup>2</sup> = 4b<sup>4</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 25a<sup>6</sup> + 20a<sup>3</sup>b<sup>2</sup> + 4b<sup>4</sup></p>
+                `
+            },
+            {
+                id: 3,
+                category: "Binomio al Cuadrado",
+                question: "Desarrolla la expresión: (2m<sup>4</sup> - 7n)<sup>2</sup>",
+                options: [
+                    "4m<sup>8</sup> - 28m<sup>4</sup>n + 49n<sup>2</sup>",
+                    "4m<sup>8</sup> - 14m<sup>4</sup>n + 49n<sup>2</sup>",
+                    "4m<sup>6</sup> - 28m<sup>4</sup>n + 49n<sup>2</sup>",
+                    "4m<sup>8</sup> + 28m<sup>4</sup>n - 49n<sup>2</sup>"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a - b)<sup>2</sup> = a<sup>2</sup> - 2ab + b<sup>2</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrado del 1º término:</strong> (2m<sup>4</sup>)<sup>2</sup> = 4m<sup>8</sup></li>
+                        <li><strong>Doble producto:</strong> 2 &middot; (2m<sup>4</sup>) &middot; (7n) = 28m<sup>4</sup>n</li>
+                        <li><strong>Cuadrado del 2º término:</strong> (7n)<sup>2</sup> = 49n<sup>2</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 4m<sup>8</sup> - 28m<sup>4</sup>n + 49n<sup>2</sup></p>
+                `
+            },
+            {
+                id: 4,
+                category: "Binomio al Cuadrado",
+                question: "Desarrolla la expresión: (4x<sup>3</sup>y<sup>2</sup> + 3z<sup>5</sup>)<sup>2</sup>",
+                options: [
+                    "16x<sup>6</sup>y<sup>4</sup> + 24x<sup>3</sup>y<sup>2</sup>z<sup>5</sup> + 9z<sup>10</sup>",
+                    "16x<sup>5</sup>y<sup>4</sup> + 24x<sup>3</sup>y<sup>2</sup>z<sup>5</sup> + 9z<sup>7</sup>",
+                    "16x<sup>6</sup>y<sup>4</sup> + 12x<sup>3</sup>y<sup>2</sup>z<sup>5</sup> + 9z<sup>10</sup>",
+                    "8x<sup>6</sup>y<sup>4</sup> + 24x<sup>3</sup>y<sup>2</sup>z<sup>5</sup> + 6z<sup>10</sup>"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a + b)<sup>2</sup> = a<sup>2</sup> + 2ab + b<sup>2</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>1º Término al cuadrado:</strong> (4x<sup>3</sup>y<sup>2</sup>)<sup>2</sup> = 16x<sup>6</sup>y<sup>4</sup></li>
+                        <li><strong>Doble producto:</strong> 2 &middot; (4x<sup>3</sup>y<sup>2</sup>) &middot; (3z<sup>5</sup>) = 24x<sup>3</sup>y<sup>2</sup>z<sup>5</sup></li>
+                        <li><strong>2º Término al cuadrado:</strong> (3z<sup>5</sup>)<sup>2</sup> = 9z<sup>10</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 16x<sup>6</sup>y<sup>4</sup> + 24x<sup>3</sup>y<sup>2</sup>z<sup>5</sup> + 9z<sup>10</sup></p>
+                `
+            },
+            {
+                id: 5,
+                category: "Binomio al Cuadrado",
+                question: "Desarrolla la expresión: (6p<sup>5</sup> - 5q<sup>4</sup>)<sup>2</sup>",
+                options: [
+                    "36p<sup>10</sup> - 30p<sup>5</sup>q<sup>4</sup> + 25q<sup>8</sup>",
+                    "36p<sup>10</sup> - 60p<sup>5</sup>q<sup>4</sup> + 25q<sup>8</sup>",
+                    "36p<sup>25</sup> - 60p<sup>5</sup>q<sup>4</sup> + 25q<sup>16</sup>",
+                    "36p<sup>10</sup> + 60p<sup>5</sup>q<sup>4</sup> - 25q<sup>8</sup>"
+                ],
+                correct: 1,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a - b)<sup>2</sup> = a<sup>2</sup> - 2ab + b<sup>2</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrado del 1º término:</strong> (6p<sup>5</sup>)<sup>2</sup> = 36p<sup>10</sup></li>
+                        <li><strong>Doble producto:</strong> 2 &middot; (6p<sup>5</sup>) &middot; (5q<sup>4</sup>) = 60p<sup>5</sup>q<sup>4</sup></li>
+                        <li><strong>Cuadrado del 2º término:</strong> (5q<sup>4</sup>)<sup>2</sup> = 25q<sup>8</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 36p<sup>10</sup> - 60p<sup>5</sup>q<sup>4</sup> + 25q<sup>8</sup></p>
+                `
+            },
+
+            // ==================== BLOQUE 2: BINOMIO CONJUGADO ====================
+            {
+                id: 6,
+                category: "Binomio Conjugado",
+                question: "Resuelve el producto: (5x<sup>3</sup> + 2y<sup>2</sup>)(5x<sup>3</sup> - 2y<sup>2</sup>)",
+                options: [
+                    "25x<sup>6</sup> + 4y<sup>4</sup>",
+                    "25x<sup>9</sup> - 4y<sup>4</sup>",
+                    "25x<sup>6</sup> - 4y<sup>4</sup>",
+                    "10x<sup>6</sup> - 4y<sup>4</sup>"
+                ],
+                correct: 2,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a + b)(a - b) = a<sup>2</sup> - b<sup>2</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrado del 1º término:</strong> (5x<sup>3</sup>)<sup>2</sup> = 25x<sup>6</sup></li>
+                        <li><strong>Menos el cuadrado del 2º término:</strong> (2y<sup>2</sup>)<sup>2</sup> = 4y<sup>4</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 25x<sup>6</sup> - 4y<sup>4</sup></p>
+                `
+            },
+            {
+                id: 7,
+                category: "Binomio Conjugado",
+                question: "Resuelve el producto: (7a<sup>4</sup> - 3b<sup>5</sup>)(7a<sup>4</sup> + 3b<sup>5</sup>)",
+                options: [
+                    "49a<sup>8</sup> - 9b<sup>10</sup>",
+                    "49a<sup>8</sup> + 9b<sup>10</sup>",
+                    "49a<sup>16</sup> - 9b<sup>25</sup>",
+                    "14a<sup>8</sup> - 6b<sup>10</sup>"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a - b)(a + b) = a<sup>2</sup> - b<sup>2</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrado del 1º término:</strong> (7a<sup>4</sup>)<sup>2</sup> = 49a<sup>8</sup></li>
+                        <li><strong>Menos el cuadrado del 2º término:</strong> (3b<sup>5</sup>)<sup>2</sup> = 9b<sup>10</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 49a<sup>8</sup> - 9b<sup>10</sup></p>
+                `
+            },
+            {
+                id: 8,
+                category: "Binomio Conjugado",
+                question: "Resuelve el producto: (4m<sup>2</sup>n<sup>3</sup> + 6p<sup>4</sup>)(4m<sup>2</sup>n<sup>3</sup> - 6p<sup>4</sup>)",
+                options: [
+                    "16m<sup>4</sup>n<sup>6</sup> - 36p<sup>8</sup>",
+                    "16m<sup>4</sup>n<sup>9</sup> - 36p<sup>16</sup>",
+                    "16m<sup>4</sup>n<sup>6</sup> + 36p<sup>8</sup>",
+                    "8m<sup>4</sup>n<sup>6</sup> - 12p<sup>8</sup>"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a + b)(a - b) = a<sup>2</sup> - b<sup>2</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrado de a:</strong> (4m<sup>2</sup>n<sup>3</sup>)<sup>2</sup> = 16m<sup>4</sup>n<sup>6</sup></li>
+                        <li><strong>Cuadrado de b:</strong> (6p<sup>4</sup>)<sup>2</sup> = 36p<sup>8</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 16m<sup>4</sup>n<sup>6</sup> - 36p<sup>8</sup></p>
+                `
+            },
+            {
+                id: 9,
+                category: "Binomio Conjugado",
+                question: "Resuelve el producto: (9u<sup>5</sup>v - 8w<sup>3</sup>)(9u<sup>5</sup>v + 8w<sup>3</sup>)",
+                options: [
+                    "81u<sup>10</sup>v<sup>2</sup> + 64w<sup>6</sup>",
+                    "81u<sup>10</sup>v<sup>2</sup> - 64w<sup>6</sup>",
+                    "81u<sup>25</sup>v<sup>2</sup> - 64w<sup>9</sup>",
+                    "18u<sup>10</sup>v<sup>2</sup> - 16w<sup>6</sup>"
+                ],
+                correct: 1,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a - b)(a + b) = a<sup>2</sup> - b<sup>2</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrado de (9u<sup>5</sup>v):</strong> 81u<sup>10</sup>v<sup>2</sup></li>
+                        <li><strong>Cuadrado de (8w<sup>3</sup>):</strong> 64w<sup>6</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 81u<sup>10</sup>v<sup>2</sup> - 64w<sup>6</sup></p>
+                `
+            },
+            {
+                id: 10,
+                category: "Binomio Conjugado",
+                question: "Resuelve el producto: (10x<sup>6</sup>y<sup>2</sup> + 11z<sup>7</sup>)(10x<sup>6</sup>y<sup>2</sup> - 11z<sup>7</sup>)",
+                options: [
+                    "100x<sup>12</sup>y<sup>4</sup> - 121z<sup>14</sup>",
+                    "100x<sup>36</sup>y<sup>4</sup> - 121z<sup>49</sup>",
+                    "100x<sup>12</sup>y<sup>4</sup> + 121z<sup>14</sup>",
+                    "20x<sup>12</sup>y<sup>4</sup> - 22z<sup>14</sup>"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a + b)(a - b) = a<sup>2</sup> - b<sup>2</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrado de (10x<sup>6</sup>y<sup>2</sup>):</strong> 100x<sup>12</sup>y<sup>4</sup></li>
+                        <li><strong>Cuadrado de (11z<sup>7</sup>):</strong> 121z<sup>14</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 100x<sup>12</sup>y<sup>4</sup> - 121z<sup>14</sup></p>
+                `
+            },
+
+            // ==================== BLOQUE 3: TÉRMINO COMÚN ====================
+            {
+                id: 11,
+                category: "Producto con Término Común",
+                question: "Resuelve: (2x<sup>2</sup> + 5)(2x<sup>2</sup> - 9)",
+                options: [
+                    "4x<sup>4</sup> - 8x<sup>2</sup> - 45",
+                    "4x<sup>4</sup> + 8x<sup>2</sup> - 45",
+                    "4x<sup>4</sup> - 14x<sup>2</sup> - 45",
+                    "4x<sup>4</sup> - 8x<sup>2</sup> + 45"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (x + a)(x + b) = x<sup>2</sup> + (a + b)x + ab</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrado del común:</strong> (2x<sup>2</sup>)<sup>2</sup> = 4x<sup>4</sup></li>
+                        <li><strong>Suma de no comunes por el común:</strong> (5 - 9)(2x<sup>2</sup>) = (-4)(2x<sup>2</sup>) = -8x<sup>2</sup></li>
+                        <li><strong>Producto de no comunes:</strong> (5)(-9) = -45</li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 4x<sup>4</sup> - 8x<sup>2</sup> - 45</p>
+                `
+            },
+            {
+                id: 12,
+                category: "Producto con Término Común",
+                question: "Resuelve: (3y<sup>3</sup> - 4)(3y<sup>3</sup> - 6)",
+                options: [
+                    "9y<sup>6</sup> - 30y<sup>3</sup> + 24",
+                    "9y<sup>6</sup> - 10y<sup>3</sup> + 24",
+                    "9y<sup>6</sup> + 30y<sup>3</sup> + 24",
+                    "9y<sup>6</sup> - 30y<sup>3</sup> - 24"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (x + a)(x + b) = x<sup>2</sup> + (a + b)x + ab</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrado del común:</strong> (3y<sup>3</sup>)<sup>2</sup> = 9y<sup>6</sup></li>
+                        <li><strong>Suma de no comunes por el común:</strong> (-4 - 6)(3y<sup>3</sup>) = (-10)(3y<sup>3</sup>) = -30y<sup>3</sup></li>
+                        <li><strong>Producto de no comunes:</strong> (-4)(-6) = +24</li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 9y<sup>6</sup> - 30y<sup>3</sup> + 24</p>
+                `
+            },
+            {
+                id: 13,
+                category: "Producto con Término Común",
+                question: "Resuelve: (5a<sup>4</sup> + 7)(5a<sup>4</sup> - 3)",
+                options: [
+                    "25a<sup>8</sup> + 20a<sup>4</sup> - 21",
+                    "25a<sup>8</sup> + 4a<sup>4</sup> - 21",
+                    "25a<sup>8</sup> - 20a<sup>4</sup> - 21",
+                    "25a<sup>8</sup> + 20a<sup>4</sup> + 21"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (x + a)(x + b) = x<sup>2</sup> + (a + b)x + ab</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrado del común:</strong> (5a<sup>4</sup>)<sup>2</sup> = 25a<sup>8</sup></li>
+                        <li><strong>Suma combinada:</strong> (7 - 3)(5a<sup>4</sup>) = (4)(5a<sup>4</sup>) = +20a<sup>4</sup></li>
+                        <li><strong>Producto final:</strong> (7)(-3) = -21</li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 25a<sup>8</sup> + 20a<sup>4</sup> - 21</p>
+                `
+            },
+            {
+                id: 14,
+                category: "Producto con Término Común",
+                question: "Resuelve: (4m<sup>3</sup> - 8)(4m<sup>3</sup> + 2)",
+                options: [
+                    "16m<sup>6</sup> - 24m<sup>3</sup> - 16",
+                    "16m<sup>6</sup> - 6m<sup>3</sup> - 16",
+                    "16m<sup>6</sup> + 24m<sup>3</sup> - 16",
+                    "16m<sup>6</sup> - 24m<sup>3</sup> + 16"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (x + a)(x + b) = x<sup>2</sup> + (a + b)x + ab</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Término común al cuadrado:</strong> (4m<sup>3</sup>)<sup>2</sup> = 16m<sup>6</sup></li>
+                        <li><strong>Suma multiplicada:</strong> (-8 + 2)(4m<sup>3</sup>) = (-6)(4m<sup>3</sup>) = -24m<sup>3</sup></li>
+                        <li><strong>Multiplicación no comunes:</strong> (-8)(2) = -16</li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 16m<sup>6</sup> - 24m<sup>3</sup> - 16</p>
+                `
+            },
+            {
+                id: 15,
+                category: "Producto con Término Común",
+                question: "Resuelve: (6z<sup>5</sup> + 4)(6z<sup>5</sup> + 5)",
+                options: [
+                    "36z<sup>10</sup> + 54z<sup>5</sup> + 20",
+                    "36z<sup>10</sup> + 9z<sup>5</sup> + 20",
+                    "36z<sup>10</sup> + 54z<sup>5</sup> - 20",
+                    "12z<sup>10</sup> + 54z<sup>5</sup> + 20"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (x + a)(x + b) = x<sup>2</sup> + (a + b)x + ab</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrado de 6z<sup>5</sup>:</strong> 36z<sup>10</sup></li>
+                        <li><strong>Suma por el común:</strong> (4 + 5)(6z<sup>5</sup>) = (9)(6z<sup>5</sup>) = +54z<sup>5</sup></li>
+                        <li><strong>Producto de no comunes:</strong> (4)(5) = +20</li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 36z<sup>10</sup> + 54z<sup>5</sup> + 20</p>
+                `
+            },
+
+            // ==================== BLOQUE 4: BINOMIO AL CUBO ====================
+            {
+                id: 16,
+                category: "Binomio al Cubo",
+                question: "Desarrolla el binomio: (2x<sup>2</sup> - 3y)<sup>3</sup>",
+                options: [
+                    "8x<sup>6</sup> - 36x<sup>4</sup>y + 36x<sup>2</sup>y<sup>2</sup> - 27y<sup>3</sup>",
+                    "8x<sup>6</sup> - 18x<sup>4</sup>y + 18x<sup>2</sup>y<sup>2</sup> - 27y<sup>3</sup>",
+                    "8x<sup>6</sup> - 36x<sup>4</sup>y - 36x<sup>2</sup>y<sup>2</sup> - 27y<sup>3</sup>",
+                    "8x<sup>6</sup> + 36x<sup>4</sup>y + 36x<sup>2</sup>y<sup>2</sup> + 27y<sup>3</sup>"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a - b)<sup>3</sup> = a<sup>3</sup> - 3a<sup>2</sup>b + 3ab<sup>2</sup> - b<sup>3</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cubo del 1º:</strong> (2x<sup>2</sup>)<sup>3</sup> = 8x<sup>6</sup></li>
+                        <li><strong>Triple del 1º al cuadrado por el 2º:</strong> 3 &middot; (2x<sup>2</sup>)<sup>2</sup> &middot; (3y) = 3 &middot; (4x<sup>4</sup>) &middot; (3y) = 36x<sup>4</sup>y</li>
+                        <li><strong>Triple del 1º por el 2º al cuadrado:</strong> 3 &middot; (2x<sup>2</sup>) &middot; (3y)<sup>2</sup> = 3 &middot; (2x<sup>2</sup>) &middot; (9y<sup>2</sup>) = 36x<sup>2</sup>y<sup>2</sup></li>
+                        <li><strong>Cubo del 2º:</strong> (3y)<sup>3</sup> = 27y<sup>3</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 8x<sup>6</sup> - 36x<sup>4</sup>y + 36x<sup>2</sup>y<sup>2</sup> - 27y<sup>3</sup></p>
+                `
+            },
+            {
+                id: 17,
+                category: "Binomio al Cubo",
+                question: "Desarrolla el binomio: (3a<sup>3</sup> + 2b<sup>2</sup>)<sup>3</sup>",
+                options: [
+                    "27a<sup>9</sup> + 54a<sup>6</sup>b<sup>2</sup> + 36a<sup>3</sup>b<sup>4</sup> + 8b<sup>6</sup>",
+                    "27a<sup>9</sup> + 18a<sup>6</sup>b<sup>2</sup> + 12a<sup>3</sup>b<sup>4</sup> + 8b<sup>6</sup>",
+                    "27a<sup>9</sup> + 54a<sup>6</sup>b<sup>2</sup> + 36a<sup>3</sup>b<sup>4</sup> - 8b<sup>6</sup>",
+                    "9a<sup>9</sup> + 54a<sup>6</sup>b<sup>2</sup> + 36a<sup>3</sup>b<sup>4</sup> + 6b<sup>6</sup>"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a + b)<sup>3</sup> = a<sup>3</sup> + 3a<sup>2</sup>b + 3ab<sup>2</sup> + b<sup>3</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cubo del 1º:</strong> (3a<sup>3</sup>)<sup>3</sup> = 27a<sup>9</sup></li>
+                        <li><strong>Triple del 1º al cuadrado por el 2º:</strong> 3 &middot; (3a<sup>3</sup>)<sup>2</sup> &middot; (2b<sup>2</sup>) = 3 &middot; (9a<sup>6</sup>) &middot; (2b<sup>2</sup>) = 54a<sup>6</sup>b<sup>2</sup></li>
+                        <li><strong>Triple del 1º por el 2º al cuadrado:</strong> 3 &middot; (3a<sup>3</sup>) &middot; (2b<sup>2</sup>)<sup>2</sup> = 3 &middot; (3a<sup>3</sup>) &middot; (4b<sup>4</sup>) = 36a<sup>3</sup>b<sup>4</sup></li>
+                        <li><strong>Cubo del 2º:</strong> (2b<sup>2</sup>)<sup>3</sup> = 8b<sup>6</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 27a<sup>9</sup> + 54a<sup>6</sup>b<sup>2</sup> + 36a<sup>3</sup>b<sup>4</sup> + 8b<sup>6</sup></p>
+                `
+            },
+            {
+                id: 18,
+                category: "Binomio al Cubo",
+                question: "Desarrolla el binomio: (4m - 5n<sup>2</sup>)<sup>3</sup>",
+                options: [
+                    "64m<sup>3</sup> - 240m<sup>2</sup>n<sup>2</sup> + 300mn<sup>4</sup> - 125n<sup>6</sup>",
+                    "64m<sup>3</sup> - 60m<sup>2</sup>n<sup>2</sup> + 100mn<sup>4</sup> - 125n<sup>6</sup>",
+                    "64m<sup>3</sup> - 240m<sup>2</sup>n<sup>2</sup> - 300mn<sup>4</sup> - 125n<sup>6</sup>",
+                    "64m<sup>3</sup> + 240m<sup>2</sup>n<sup>2</sup> + 300mn<sup>4</sup> + 125n<sup>6</sup>"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a - b)<sup>3</sup> = a<sup>3</sup> - 3a<sup>2</sup>b + 3ab<sup>2</sup> - b<sup>3</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cubo de 4m:</strong> (4m)<sup>3</sup> = 64m<sup>3</sup></li>
+                        <li><strong>Segundo término:</strong> -3 &middot; (4m)<sup>2</sup> &middot; (5n<sup>2</sup>) = -3 &middot; (16m<sup>2</sup>) &middot; (5n<sup>2</sup>) = -240m<sup>2</sup>n<sup>2</sup></li>
+                        <li><strong>Tercer término:</strong> +3 &middot; (4m) &middot; (5n<sup>2</sup>)<sup>2</sup> = +3 &middot; (4m) &middot; (25n<sup>4</sup>) = +300mn<sup>4</sup></li>
+                        <li><strong>Cuarto término:</strong> -(5n<sup>2</sup>)<sup>3</sup> = -125n<sup>6</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 64m<sup>3</sup> - 240m<sup>2</sup>n<sup>2</sup> + 300mn<sup>4</sup> - 125n<sup>6</sup></p>
+                `
+            },
+            {
+                id: 19,
+                category: "Binomio al Cubo",
+                question: "Desarrolla el binomio: (x<sup>4</sup> + 4y<sup>3</sup>)<sup>3</sup>",
+                options: [
+                    "x<sup>12</sup> + 12x<sup>8</sup>y<sup>3</sup> + 48x<sup>4</sup>y<sup>6</sup> + 64y<sup>9</sup>",
+                    "x<sup>12</sup> + 4x<sup>8</sup>y<sup>3</sup> + 16x<sup>4</sup>y<sup>6</sup> + 64y<sup>9</sup>",
+                    "x<sup>7</sup> + 12x<sup>8</sup>y<sup>3</sup> + 48x<sup>4</sup>y<sup>6</sup> + 64y<sup>6</sup>",
+                    "x<sup>12</sup> + 12x<sup>8</sup>y<sup>3</sup> - 48x<sup>4</sup>y<sup>6</sup> + 64y<sup>9</sup>"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a + b)<sup>3</sup> = a<sup>3</sup> + 3a<sup>2</sup>b + 3ab<sup>2</sup> + b<sup>3</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cubo de x<sup>4</sup>:</strong> (x<sup>4</sup>)<sup>3</sup> = x<sup>12</sup></li>
+                        <li><strong>Segundo término:</strong> 3 &middot; (x<sup>4</sup>)<sup>2</sup> &middot; (4y<sup>3</sup>) = 12x<sup>8</sup>y<sup>3</sup></li>
+                        <li><strong>Tercer término:</strong> 3 &middot; (x<sup>4</sup>) &middot; (4y<sup>3</sup>)<sup>2</sup> = 48x<sup>4</sup>y<sup>6</sup></li>
+                        <li><strong>Cuarto término:</strong> (4y<sup>3</sup>)<sup>3</sup> = 64y<sup>9</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> x<sup>12</sup> + 12x<sup>8</sup>y<sup>3</sup> + 48x<sup>4</sup>y<sup>6</sup> + 64y<sup>9</sup></p>
+                `
+            },
+            {
+                id: 20,
+                category: "Binomio al Cubo",
+                question: "Desarrolla el binomio: (5p<sup>2</sup> - 2q<sup>4</sup>)<sup>3</sup>",
+                options: [
+                    "125p<sup>6</sup> - 150p<sup>4</sup>q<sup>4</sup> + 60p<sup>2</sup>q<sup>8</sup> - 8q<sup>12</sup>",
+                    "125p<sup>6</sup> - 30p<sup>4</sup>q<sup>4</sup> + 20p<sup>2</sup>q<sup>8</sup> - 8q<sup>12</sup>",
+                    "125p<sup>6</sup> - 150p<sup>4</sup>q<sup>4</sup> - 60p<sup>2</sup>q<sup>8</sup> - 8q<sup>12</sup>",
+                    "125p<sup>5</sup> - 150p<sup>4</sup>q<sup>4</sup> + 60p<sup>2</sup>q<sup>8</sup> - 8q<sup>7</sup>"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a - b)<sup>3</sup> = a<sup>3</sup> - 3a<sup>2</sup>b + 3ab<sup>2</sup> - b<sup>3</sup></p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cubo de 5p<sup>2</sup>:</strong> (5p<sup>2</sup>)<sup>3</sup> = 125p<sup>6</sup></li>
+                        <li><strong>Segundo término:</strong> -3 &middot; (5p<sup>2</sup>)<sup>2</sup> &middot; (2q<sup>4</sup>) = -150p<sup>4</sup>q<sup>4</sup></li>
+                        <li><strong>Tercer término:</strong> +3 &middot; (5p<sup>2</sup>) &middot; (2q<sup>4</sup>)<sup>2</sup> = +60p<sup>2</sup>q<sup>8</sup></li>
+                        <li><strong>Cuarto término:</strong> -(2q<sup>4</sup>)<sup>3</sup> = -8q<sup>12</sup></li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 125p<sup>6</sup> - 150p<sup>4</sup>q<sup>4</sup> + 60p<sup>2</sup>q<sup>8</sup> - 8q<sup>12</sup></p>
+                `
+            },
+
+            // ==================== BLOQUE 5: TRINOMIO AL CUADRADO ====================
+            {
+                id: 21,
+                category: "Trinomio al Cuadrado",
+                question: "Desarrolla: (2x - 3y + 4z)<sup>2</sup>",
+                options: [
+                    "4x<sup>2</sup> + 9y<sup>2</sup> + 16z<sup>2</sup> - 12xy + 16xz - 24yz",
+                    "4x<sup>2</sup> + 9y<sup>2</sup> + 16z<sup>2</sup> - 6xy + 8xz - 12yz",
+                    "4x<sup>2</sup> - 9y<sup>2</sup> + 16z<sup>2</sup> - 12xy + 16xz - 24yz",
+                    "4x<sup>2</sup> + 9y<sup>2</sup> + 16z<sup>2</sup> + 12xy - 16xz - 24yz"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a + b + c)<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> + c<sup>2</sup> + 2ab + 2ac + 2bc</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrados individuales:</strong> (2x)<sup>2</sup> = 4x<sup>2</sup>, (-3y)<sup>2</sup> = 9y<sup>2</sup>, (4z)<sup>2</sup> = 16z<sup>2</sup></li>
+                        <li><strong>2ab:</strong> 2 &middot; (2x) &middot; (-3y) = -12xy</li>
+                        <li><strong>2ac:</strong> 2 &middot; (2x) &middot; (4z) = 16xz</li>
+                        <li><strong>2bc:</strong> 2 &middot; (-3y) &middot; (4z) = -24yz</li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 4x<sup>2</sup> + 9y<sup>2</sup> + 16z<sup>2</sup> - 12xy + 16xz - 24yz</p>
+                `
+            },
+            {
+                id: 22,
+                category: "Trinomio al Cuadrado",
+                question: "Desarrolla: (3a<sup>2</sup> + 2b - 5c)<sup>2</sup>",
+                options: [
+                    "9a<sup>4</sup> + 4b<sup>2</sup> + 25c<sup>2</sup> + 12a<sup>2</sup>b - 30a<sup>2</sup>c - 20bc",
+                    "9a<sup>4</sup> + 4b<sup>2</sup> + 25c<sup>2</sup> + 6a<sup>2</sup>b - 15a<sup>2</sup>c - 10bc",
+                    "9a<sup>4</sup> + 4b<sup>2</sup> - 25c<sup>2</sup> + 12a<sup>2</sup>b - 30a<sup>2</sup>c - 20bc",
+                    "9a<sup>4</sup> + 4b<sup>2</sup> + 25c<sup>2</sup> - 12a<sup>2</sup>b - 30a<sup>2</sup>c + 20bc"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a + b + c)<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> + c<sup>2</sup> + 2ab + 2ac + 2bc</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrados:</strong> (3a<sup>2</sup>)<sup>2</sup> = 9a<sup>4</sup>, (2b)<sup>2</sup> = 4b<sup>2</sup>, (-5c)<sup>2</sup> = 25c<sup>2</sup></li>
+                        <li><strong>Dobles productos:</strong>
+                            <br>&bull; 2 &middot; (3a<sup>2</sup>) &middot; (2b) = 12a<sup>2</sup>b
+                            <br>&bull; 2 &middot; (3a<sup>2</sup>) &middot; (-5c) = -30a<sup>2</sup>c
+                            <br>&bull; 2 &middot; (2b) &middot; (-5c) = -20bc
+                        </li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 9a<sup>4</sup> + 4b<sup>2</sup> + 25c<sup>2</sup> + 12a<sup>2</sup>b - 30a<sup>2</sup>c - 20bc</p>
+                `
+            },
+            {
+                id: 23,
+                category: "Trinomio al Cuadrado",
+                question: "Desarrolla: (m<sup>3</sup> - 4n<sup>2</sup> - 2p)<sup>2</sup>",
+                options: [
+                    "m<sup>6</sup> + 16n<sup>4</sup> + 4p<sup>2</sup> - 8m<sup>3</sup>n<sup>2</sup> - 4m<sup>3</sup>p + 16n<sup>2</sup>p",
+                    "m<sup>6</sup> + 16n<sup>4</sup> + 4p<sup>2</sup> - 8m<sup>3</sup>n<sup>2</sup> + 4m<sup>3</sup>p + 16n<sup>2</sup>p",
+                    "m<sup>6</sup> + 16n<sup>4</sup> + 4p<sup>2</sup> - 4m<sup>3</sup>n<sup>2</sup> - 2m<sup>3</sup>p + 8n<sup>2</sup>p",
+                    "m<sup>5</sup> + 16n<sup>4</sup> + 4p<sup>2</sup> - 8m<sup>3</sup>n<sup>2</sup> - 4m<sup>3</sup>p - 16n<sup>2</sup>p"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a + b + c)<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> + c<sup>2</sup> + 2ab + 2ac + 2bc</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrados:</strong> (m<sup>3</sup>)<sup>2</sup> = m<sup>6</sup>, (-4n<sup>2</sup>)<sup>2</sup> = 16n<sup>4</sup>, (-2p)<sup>2</sup> = 4p<sup>2</sup></li>
+                        <li><strong>Dobles productos:</strong>
+                            <br>&bull; 2 &middot; (m<sup>3</sup>) &middot; (-4n<sup>2</sup>) = -8m<sup>3</sup>n<sup>2</sup>
+                            <br>&bull; 2 &middot; (m<sup>3</sup>) &middot; (-2p) = -4m<sup>3</sup>p
+                            <br>&bull; 2 &middot; (-4n<sup>2</sup>) &middot; (-2p) = +16n<sup>2</sup>p
+                        </li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> m<sup>6</sup> + 16n<sup>4</sup> + 4p<sup>2</sup> - 8m<sup>3</sup>n<sup>2</sup> - 4m<sup>3</sup>p + 16n<sup>2</sup>p</p>
+                `
+            },
+            {
+                id: 24,
+                category: "Trinomio al Cuadrado",
+                question: "Desarrolla: (5x<sup>2</sup> + y<sup>2</sup> + 3z<sup>3</sup>)<sup>2</sup>",
+                options: [
+                    "25x<sup>4</sup> + y<sup>4</sup> + 9z<sup>6</sup> + 10x<sup>2</sup>y<sup>2</sup> + 30x<sup>2</sup>z<sup>3</sup> + 6y<sup>2</sup>z<sup>3</sup>",
+                    "25x<sup>4</sup> + y<sup>4</sup> + 9z<sup>6</sup> + 5x<sup>2</sup>y<sup>2</sup> + 15x<sup>2</sup>z<sup>3</sup> + 3y<sup>2</sup>z<sup>3</sup>",
+                    "25x<sup>4</sup> + y<sup>4</sup> + 9z<sup>5</sup> + 10x<sup>2</sup>y<sup>2</sup> + 30x<sup>2</sup>z<sup>3</sup> + 6y<sup>2</sup>z<sup>3</sup>",
+                    "25x<sup>4</sup> + y<sup>4</sup> - 9z<sup>6</sup> + 10x<sup>2</sup>y<sup>2</sup> + 30x<sup>2</sup>z<sup>3</sup> + 6y<sup>2</sup>z<sup>3</sup>"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a + b + c)<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> + c<sup>2</sup> + 2ab + 2ac + 2bc</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrados:</strong> (5x<sup>2</sup>)<sup>2</sup> = 25x<sup>4</sup>, (y<sup>2</sup>)<sup>2</sup> = y<sup>4</sup>, (3z<sup>3</sup>)<sup>2</sup> = 9z<sup>6</sup></li>
+                        <li><strong>Dobles productos:</strong>
+                            <br>&bull; 2 &middot; (5x<sup>2</sup>) &middot; (y<sup>2</sup>) = 10x<sup>2</sup>y<sup>2</sup>
+                            <br>&bull; 2 &middot; (5x<sup>2</sup>) &middot; (3z<sup>3</sup>) = 30x<sup>2</sup>z<sup>3</sup>
+                            <br>&bull; 2 &middot; (y<sup>2</sup>) &middot; (3z<sup>3</sup>) = 6y<sup>2</sup>z<sup>3</sup>
+                        </li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 25x<sup>4</sup> + y<sup>4</sup> + 9z<sup>6</sup> + 10x<sup>2</sup>y<sup>2</sup> + 30x<sup>2</sup>z<sup>3</sup> + 6y<sup>2</sup>z<sup>3</sup></p>
+                `
+            },
+            {
+                id: 25,
+                category: "Trinomio al Cuadrado",
+                question: "Desarrolla: (4a - b<sup>3</sup> - 6c<sup>2</sup>)<sup>2</sup>",
+                options: [
+                    "16a<sup>2</sup> + b<sup>6</sup> + 36c<sup>4</sup> - 8ab<sup>3</sup> - 48ac<sup>2</sup> + 12b<sup>3</sup>c<sup>2</sup>",
+                    "16a<sup>2</sup> + b<sup>6</sup> + 36c<sup>4</sup> - 4ab<sup>3</sup> - 24ac<sup>2</sup> + 6b<sup>3</sup>c<sup>2</sup>",
+                    "16a<sup>2</sup> - b<sup>6</sup> - 36c<sup>4</sup> - 8ab<sup>3</sup> - 48ac<sup>2</sup> + 12b<sup>3</sup>c<sup>2</sup>",
+                    "16a<sup>2</sup> + b<sup>6</sup> + 36c<sup>4</sup> + 8ab<sup>3</sup> - 48ac<sup>2</sup> - 12b<sup>3</sup>c<sup>2</sup>"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Fórmula: (a + b + c)<sup>2</sup> = a<sup>2</sup> + b<sup>2</sup> + c<sup>2</sup> + 2ab + 2ac + 2bc</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Cuadrados:</strong> (4a)<sup>2</sup> = 16a<sup>2</sup>, (-b<sup>3</sup>)<sup>2</sup> = b<sup>6</sup>, (-6c<sup>2</sup>)<sup>2</sup> = 36c<sup>4</sup></li>
+                        <li><strong>Dobles productos:</strong>
+                            <br>&bull; 2 &middot; (4a) &middot; (-b<sup>3</sup>) = -8ab<sup>3</sup>
+                            <br>&bull; 2 &middot; (4a) &middot; (-6c<sup>2</sup>) = -48ac<sup>2</sup>
+                            <br>&bull; 2 &middot; (-b<sup>3</sup>) &middot; (-6c<sup>2</sup>) = +12b<sup>3</sup>c<sup>2</sup>
+                        </li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 16a<sup>2</sup> + b<sup>6</sup> + 36c<sup>4</sup> - 8ab<sup>3</sup> - 48ac<sup>2</sup> + 12b<sup>3</sup>c<sup>2</sup></p>
+                `
+            },
+
+            // ==================== BLOQUE 6: FACTOR COMÚN ====================
+            {
+                id: 26,
+                category: "Factor Común",
+                question: "Factoriza completamente: 12x<sup>4</sup>y<sup>3</sup> - 18x<sup>3</sup>y<sup>5</sup> + 24x<sup>2</sup>y<sup>4</sup>",
+                options: [
+                    "6x<sup>2</sup>y<sup>3</sup>(2x<sup>2</sup> - 3xy<sup>2</sup> + 4y)",
+                    "6x<sup>3</sup>y<sup>3</sup>(2x<sup>2</sup> - 3y<sup>2</sup> + 4y)",
+                    "3x<sup>2</sup>y<sup>3</sup>(4x<sup>2</sup> - 6xy<sup>2</sup> + 8y)",
+                    "6x<sup>2</sup>y<sup>4</sup>(2x<sup>2</sup> - 3xy + 4)"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Cálculo del Factor Común Monomio:</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>MCD de coeficientes (12, 18, 24):</strong> 6</li>
+                        <li><strong>Variables comunes de menor exponente:</strong> x<sup>2</sup>, y<sup>3</sup> &rarr; <strong>6x<sup>2</sup>y<sup>3</sup></strong></li>
+                        <li><strong>División de cada término:</strong>
+                            <br>&bull; (12x<sup>4</sup>y<sup>3</sup>) / (6x<sup>2</sup>y<sup>3</sup>) = 2x<sup>2</sup>
+                            <br>&bull; (-18x<sup>3</sup>y<sup>5</sup>) / (6x<sup>2</sup>y<sup>3</sup>) = -3xy<sup>2</sup>
+                            <br>&bull; (24x<sup>2</sup>y<sup>4</sup>) / (6x<sup>2</sup>y<sup>3</sup>) = 4y
+                        </li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 6x<sup>2</sup>y<sup>3</sup>(2x<sup>2</sup> - 3xy<sup>2</sup> + 4y)</p>
+                `
+            },
+            {
+                id: 27,
+                category: "Factor Común",
+                question: "Factoriza completamente: 15a<sup>5</sup>b<sup>2</sup>c<sup>3</sup> - 25a<sup>3</sup>b<sup>4</sup>c<sup>2</sup> + 35a<sup>4</sup>b<sup>3</sup>c<sup>5</sup>",
+                options: [
+                    "5a<sup>3</sup>b<sup>2</sup>c<sup>2</sup>(3a<sup>2</sup>c - 5b<sup>2</sup> + 7abc<sup>3</sup>)",
+                    "5a<sup>3</sup>b<sup>2</sup>c<sup>3</sup>(3a<sup>2</sup> - 5b<sup>2</sup> + 7abc<sup>2</sup>)",
+                    "5a<sup>5</sup>b<sup>4</sup>c<sup>5</sup>(3a<sup>2</sup>c - 5b<sup>2</sup> + 7abc<sup>3</sup>)",
+                    "15a<sup>3</sup>b<sup>2</sup>c<sup>2</sup>(a<sup>2</sup>c - 2b<sup>2</sup> + 3abc<sup>3</sup>)"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Cálculo del Factor Común Monomio:</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>MCD de coeficientes (15, 25, 35):</strong> 5</li>
+                        <li><strong>Menores exponentes:</strong> a<sup>3</sup>, b<sup>2</sup>, c<sup>2</sup> &rarr; <strong>5a<sup>3</sup>b<sup>2</sup>c<sup>2</sup></strong></li>
+                        <li><strong>División de cada término:</strong>
+                            <br>&bull; (15a<sup>5</sup>b<sup>2</sup>c<sup>3</sup>) / (5a<sup>3</sup>b<sup>2</sup>c<sup>2</sup>) = 3a<sup>2</sup>c
+                            <br>&bull; (-25a<sup>3</sup>b<sup>4</sup>c<sup>2</sup>) / (5a<sup>3</sup>b<sup>2</sup>c<sup>2</sup>) = -5b<sup>2</sup>
+                            <br>&bull; (35a<sup>4</sup>b<sup>3</sup>c<sup>5</sup>) / (5a<sup>3</sup>b<sup>2</sup>c<sup>2</sup>) = 7abc<sup>3</sup>
+                        </li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 5a<sup>3</sup>b<sup>2</sup>c<sup>2</sup>(3a<sup>2</sup>c - 5b<sup>2</sup> + 7abc<sup>3</sup>)</p>
+                `
+            },
+            {
+                id: 28,
+                category: "Factor Común",
+                question: "Factoriza completamente: 16m<sup>6</sup>n<sup>4</sup> - 24m<sup>4</sup>n<sup>6</sup> + 40m<sup>5</sup>n<sup>5</sup>",
+                options: [
+                    "8m<sup>4</sup>n<sup>4</sup>(2m<sup>2</sup> - 3n<sup>2</sup> + 5mn)",
+                    "8m<sup>4</sup>n<sup>4</sup>(2m<sup>2</sup> - 3n<sup>2</sup> + 5)",
+                    "4m<sup>4</sup>n<sup>4</sup>(4m<sup>2</sup> - 6n<sup>2</sup> + 10mn)",
+                    "8m<sup>6</sup>n<sup>6</sup>(2m<sup>2</sup> - 3n<sup>2</sup> + 5mn)"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Cálculo del Factor Común Monomio:</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>MCD de coeficientes (16, 24, 40):</strong> 8</li>
+                        <li><strong>Menores exponentes:</strong> m<sup>4</sup>, n<sup>4</sup> &rarr; <strong>8m<sup>4</sup>n<sup>4</sup></strong></li>
+                        <li><strong>División de cada término:</strong>
+                            <br>&bull; (16m<sup>6</sup>n<sup>4</sup>) / (8m<sup>4</sup>n<sup>4</sup>) = 2m<sup>2</sup>
+                            <br>&bull; (-24m<sup>4</sup>n<sup>6</sup>) / (8m<sup>4</sup>n<sup>4</sup>) = -3n<sup>2</sup>
+                            <br>&bull; (40m<sup>5</sup>n<sup>5</sup>) / (8m<sup>4</sup>n<sup>4</sup>) = 5mn
+                        </li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 8m<sup>4</sup>n<sup>4</sup>(2m<sup>2</sup> - 3n<sup>2</sup> + 5mn)</p>
+                `
+            },
+            {
+                id: 29,
+                category: "Factor Común",
+                question: "Factoriza completamente: 4x<sup>2</sup>(2a - 3b) - 8xy(2a - 3b) + 12x(2a - 3b)",
+                options: [
+                    "4x(2a - 3b)(x - 2y + 3)",
+                    "4x(2a - 3b)(x - 2y + 12)",
+                    "(2a - 3b)(4x<sup>2</sup> - 8xy + 12x)",
+                    "4x(2a + 3b)(x - 2y + 3)"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Factor Común Polinomio y Monomio:</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>Polinomio común:</strong> (2a - 3b)</li>
+                        <li><strong>Factor común de términos externos (4x<sup>2</sup>, 8xy, 12x):</strong> 4x</li>
+                        <li><strong>Factor Común Total:</strong> <strong>4x(2a - 3b)</strong></li>
+                        <li><strong>Término residual al dividir:</strong> (x - 2y + 3)</li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 4x(2a - 3b)(x - 2y + 3)</p>
+                `
+            },
+            {
+                id: 30,
+                category: "Factor Común",
+                question: "Factoriza completamente: 18p<sup>7</sup>q<sup>3</sup>r<sup>2</sup> - 27p<sup>5</sup>q<sup>4</sup>r<sup>4</sup> + 36p<sup>4</sup>q<sup>6</sup>r<sup>3</sup>",
+                options: [
+                    "9p<sup>4</sup>q<sup>3</sup>r<sup>2</sup>(2p<sup>3</sup> - 3p<sup>2</sup>qr<sup>2</sup> + 4q<sup>3</sup>r)",
+                    "9p<sup>4</sup>q<sup>3</sup>r<sup>2</sup>(2p<sup>3</sup> - 3pqr<sup>2</sup> + 4q<sup>3</sup>r)",
+                    "9p<sup>7</sup>q<sup>6</sup>r<sup>4</sup>(2p<sup>3</sup> - 3p<sup>2</sup>qr<sup>2</sup> + 4q<sup>3</sup>r)",
+                    "3p<sup>4</sup>q<sup>3</sup>r<sup>2</sup>(6p<sup>3</sup> - 9p<sup>2</sup>qr<sup>2</sup> + 12q<sup>3</sup>r)"
+                ],
+                correct: 0,
+                procedure: `
+                    <p class="mb-2 font-semibold text-gold-400">Cálculo del Factor Común Monomio:</p>
+                    <ul class="list-disc list-inside space-y-1 text-slate-200">
+                        <li><strong>MCD de coeficientes (18, 27, 36):</strong> 9</li>
+                        <li><strong>Menores exponentes:</strong> p<sup>4</sup>, q<sup>3</sup>, r<sup>2</sup> &rarr; <strong>9p<sup>4</sup>q<sup>3</sup>r<sup>2</sup></strong></li>
+                        <li><strong>División de cada término:</strong>
+                            <br>&bull; (18p<sup>7</sup>q<sup>3</sup>r<sup>2</sup>) / (9p<sup>4</sup>q<sup>3</sup>r<sup>2</sup>) = 2p<sup>3</sup>
+                            <br>&bull; (-27p<sup>5</sup>q<sup>4</sup>r<sup>4</sup>) / (9p<sup>4</sup>q<sup>3</sup>r<sup>2</sup>) = -3p<sup>2</sup>qr<sup>2</sup>
+                            <br>&bull; (36p<sup>4</sup>q<sup>6</sup>r<sup>3</sup>) / (9p<sup>4</sup>q<sup>3</sup>r<sup>2</sup>) = 4q<sup>3</sup>r
+                        </li>
+                    </ul>
+                    <p class="mt-3 font-mono text-emerald-400 font-bold bg-slate-900 p-2 rounded border border-slate-700"><strong>Resultado:</strong> 9p<sup>4</sup>q<sup>3</sup>r<sup>2</sup>(2p<sup>3</sup> - 3p<sup>2</sup>qr<sup>2</sup> + 4q<sup>3</sup>r)</p>
+                `
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let score = 0;
+        let userAnswers = [];
+        let answered = false;
+
+        function renderMath() {
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise().catch((err) => console.error("MathJax error:", err));
+            }
+        }
+
+        function startQuiz() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            document.getElementById('header-stats').classList.remove('hidden');
+            
+            currentQuestionIdx = 0;
+            score = 0;
+            userAnswers = [];
+            updateHeaderScore();
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answered = false;
+            const q = questionsDB[currentQuestionIdx];
+
+            document.getElementById('topic-badge').textContent = q.category;
+            document.getElementById('current-q-num').textContent = currentQuestionIdx + 1;
+            
+            const progressPercent = ((currentQuestionIdx + 1) / questionsDB.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            document.getElementById('question-text').innerHTML = q.question;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            const optionLetters = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `option-btn w-full text-left p-4 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700/80 font-medium text-slate-100 flex items-center justify-between group`;
+                btn.onclick = () => checkAnswer(idx);
+                btn.id = `opt-btn-${idx}`;
+                
+                btn.innerHTML = `
+                    <div class="flex items-center space-x-3 overflow-x-auto">
+                        <span class="w-8 h-8 rounded-lg bg-slate-700 text-gold-400 group-hover:bg-royal-600 group-hover:text-white flex items-center justify-center font-bold text-sm shrink-0 transition-colors">
+                            ${optionLetters[idx]}
+                        </span>
+                        <span class="text-sm md:text-base">${opt}</span>
+                    </div>
+                    <i class="fa-regular fa-circle text-slate-500 text-lg shrink-0 ms-2"></i>
+                `;
+                container.appendChild(btn);
+            });
+
+            const fbCard = document.getElementById('feedback-card');
+            fbCard.classList.add('hidden');
+
+            renderMath();
+        }
+
+        function checkAnswer(selectedIdx) {
+            if (answered) return;
+            answered = true;
+
+            const q = questionsDB[currentQuestionIdx];
+            const isCorrect = (selectedIdx === q.correct);
+            userAnswers.push({ category: q.category, correct: isCorrect });
+
+            if (isCorrect) score++;
+            updateHeaderScore();
+
+            for (let i = 0; i < q.options.length; i++) {
+                const btn = document.getElementById(`opt-btn-${i}`);
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-slate-700/80');
+
+                if (i === q.correct) {
+                    btn.classList.add('border-emerald-500', 'bg-emerald-950/40', 'text-emerald-200');
+                    btn.querySelector('i').className = 'fa-solid fa-circle-check text-emerald-400 text-lg shrink-0 ms-2';
+                } else if (i === selectedIdx && !isCorrect) {
+                    btn.classList.add('border-rose-500', 'bg-rose-950/40', 'text-rose-200');
+                    btn.querySelector('i').className = 'fa-solid fa-circle-xmark text-rose-400 text-lg shrink-0 ms-2';
+                } else {
+                    btn.classList.add('opacity-50');
+                }
+            }
+
+            const fbCard = document.getElementById('feedback-card');
+            const fbHeader = document.getElementById('feedback-header');
+            const fbBody = document.getElementById('feedback-body');
+
+            fbCard.classList.remove('hidden');
+
+            if (isCorrect) {
+                fbCard.className = "rounded-xl p-5 border border-emerald-500/40 bg-emerald-950/20 text-emerald-200 space-y-3 shadow-lg";
+                fbHeader.innerHTML = `
+                    <i class="fa-solid fa-circle-check text-emerald-400 text-2xl"></i>
+                    <span class="text-emerald-400 font-extrabold">¡Respuesta Correcta! Excelente trabajo.</span>
+                `;
+                fbBody.innerHTML = `<p>Has identificado correctamente el desarrollo del ejercicio.</p>`;
+            } else {
+                fbCard.className = "rounded-xl p-5 border border-rose-500/40 bg-rose-950/20 text-rose-100 space-y-4 shadow-lg";
+                fbHeader.innerHTML = `
+                    <i class="fa-solid fa-circle-xmark text-rose-400 text-2xl"></i>
+                    <span class="text-rose-400 font-extrabold">Respuesta Incorrecta</span>
+                `;
+                fbBody.innerHTML = `
+                    <div class="mb-3 p-3 bg-slate-900/80 border border-slate-700 rounded-lg">
+                        <span class="text-xs text-slate-400 uppercase font-semibold block">Respuesta Correcta:</span>
+                        <div class="text-base font-bold text-gold-400 mt-1">${q.options[q.correct]}</div>
+                    </div>
+                    <div class="space-y-2">
+                        <span class="text-xs text-royal-400 font-bold uppercase tracking-wider block">Procedimiento Explicativo Paso a Paso:</span>
+                        ${q.procedure}
+                    </div>
+                `;
+            }
+
+            renderMath();
+        }
+
+        function nextQuestion() {
+            currentQuestionIdx++;
+            if (currentQuestionIdx < questionsDB.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateHeaderScore() {
+            document.getElementById('header-score').textContent = score;
+        }
+
+        function showResults() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('results-screen').classList.remove('hidden');
+
+            const total = questionsDB.length;
+            const percentage = Math.round((score / total) * 100);
+
+            document.getElementById('final-score-text').textContent = `${score}/${total}`;
+            document.getElementById('final-percentage-text').textContent = `${percentage}%`;
+
+            const resultIcon = document.getElementById('result-icon');
+            const resultIconContainer = document.getElementById('result-icon-container');
+            const assessment = document.getElementById('result-assessment');
+
+            if (percentage >= 90) {
+                resultIcon.className = "fa-solid fa-crown text-4xl text-gold-400";
+                resultIconContainer.className = "inline-flex p-4 rounded-full bg-gold-500/10 border border-gold-500/30 mb-2";
+                assessment.textContent = "¡Nivel Dominado! Excelente dominio del álgebra.";
+                assessment.className = "text-lg font-semibold text-gold-400";
+            } else if (percentage >= 70) {
+                resultIcon.className = "fa-solid fa-medal text-4xl text-royal-400";
+                resultIconContainer.className = "inline-flex p-4 rounded-full bg-royal-500/10 border border-royal-500/30 mb-2";
+                assessment.textContent = "¡Buen trabajo! Tienes bases sólidas, requiere ligera práctica.";
+                assessment.className = "text-lg font-semibold text-royal-400";
+            } else {
+                resultIcon.className = "fa-solid fa-book-open-reader text-4xl text-rose-400";
+                resultIconContainer.className = "inline-flex p-4 rounded-full bg-rose-500/10 border border-rose-500/30 mb-2";
+                assessment.textContent = "Necesitas práctica. Revisa los procedimientos y vuelve a intentarlo.";
+                assessment.className = "text-lg font-semibold text-rose-400";
+            }
+
+            const categories = [
+                "Binomio al Cuadrado",
+                "Binomio Conjugado",
+                "Producto con Término Común",
+                "Binomio al Cubo",
+                "Trinomio al Cuadrado",
+                "Factor Común"
+            ];
+
+            const breakdownContainer = document.getElementById('category-breakdown');
+            breakdownContainer.innerHTML = '';
+
+            categories.forEach(cat => {
+                const catItems = userAnswers.filter(item => item.category === cat);
+                const catCorrect = catItems.filter(item => item.correct).length;
+                const catTotal = catItems.length;
+                const catPercent = Math.round((catCorrect / catTotal) * 100);
+
+                const card = document.createElement('div');
+                card.className = "bg-slate-950/60 border border-slate-800 p-3.5 rounded-xl flex items-center justify-between";
+                card.innerHTML = `
+                    <div class="space-y-0.5">
+                        <span class="font-semibold text-slate-200 block text-sm">${cat}</span>
+                        <span class="text-xs text-slate-400">${catCorrect} de ${catTotal} acertados</span>
+                    </div>
+                    <span class="font-bold text-sm ${catPercent >= 80 ? 'text-emerald-400' : (catPercent >= 60 ? 'text-gold-400' : 'text-rose-400')}">
+                        ${catPercent}%
+                    </span>
+                `;
+                breakdownContainer.appendChild(card);
+            });
+        }
+
+        function resetQuiz() {
+            document.getElementById('results-screen').classList.add('hidden');
+            startQuiz();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Simulador de matemáticas</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#1d2433;--mu:#5d667a;--ac:#3b5bdb;--ok:#2b8a3e;--okb:#e6f6ea;--ko:#c92a2a;--kob:#fdeaea;--bd:#d9deea;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171f;--card:#1e222d;--tx:#e8ebf3;--mu:#9aa3b8;--ac:#7c93ff;--ok:#69db7c;--okb:#17301f;--ko:#ff8787;--kob:#3a1c1c;--bd:#343a4b}}
+:root[data-theme="dark"]{--bg:#14171f;--card:#1e222d;--tx:#e8ebf3;--mu:#9aa3b8;--ac:#7c93ff;--ok:#69db7c;--okb:#17301f;--ko:#ff8787;--kob:#3a1c1c;--bd:#343a4b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;line-height:1.5}
+.w{max-width:680px;margin:0 auto;padding:20px 14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px}
+h1{font-size:1.2rem;margin:0 0 4px}.mu{color:var(--mu);font-size:.9rem}
+.bar{height:6px;background:var(--bd);border-radius:6px;margin:12px 0 16px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac);transition:width .3s}
+.ex{font-size:1.25rem;padding:16px 8px;overflow-x:auto;white-space:nowrap;text-align:center}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 2px;font-size:.85em;line-height:1.2}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.opt{font-size:1.1rem;padding:12px;border:1.5px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;cursor:pointer;min-height:56px}
+.opt:hover:not(:disabled){border-color:var(--ac)}
+.opt.ok{border-color:var(--ok);background:var(--okb)}.opt.ko{border-color:var(--ko);background:var(--kob)}
+.fb{margin-top:14px;padding:12px 14px;border-radius:10px}
+.fb.ok{background:var(--okb);color:var(--ok);font-weight:600}.fb.ko{background:var(--kob)}
+.fb h3{margin:0 0 6px;font-size:1rem;color:var(--ko)}
+.fb ol{margin:6px 0 0;padding-left:20px;color:var(--tx)}.fb li{margin:4px 0}
+.btn{margin-top:14px;padding:11px 20px;border:0;border-radius:10px;background:var(--ac);color:#fff;font-size:1rem;cursor:pointer}
+.big{font-size:3rem;font-weight:700;text-align:center;margin:10px 0}
+.hide{display:none}
+</style></head><body><div class="w"><div class="card" id="app"></div></div>
+<script>
+const F=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+const R=s=>s.replace(/~(-?\d+)\/(\d+)~/g,(m,a,b)=>F(a.replace('-','−'),b)).replace(/\^\(([^)]+)\)/g,'<sup>$1</sup>').replace(/\^(\d)/g,'<sup>$1</sup>').replace(/-/g,'−');
+const EX=[
+{e:"~1/2~ − { (−2)^3 ÷ 4 + [ 1 − ( ~1/2~ − ~1/3~ ) ] } · ~3/5~",a:"6/5",s:["Paréntesis: ~1/2~ − ~1/3~ = ~3/6~ − ~2/6~ = ~1/6~","Corchetes: 1 − ~1/6~ = ~5/6~","Potencia y división: (−2)^3 = −8;  −8 ÷ 4 = −2","Llaves: −2 + ~5/6~ = ~-12/6~ + ~5/6~ = ~-7/6~","Multiplicación: ~-7/6~ · ~3/5~ = ~-21/30~ = ~-7/10~","Resta: ~1/2~ − (~-7/10~) = ~5/10~ + ~7/10~ = ~12/10~ = ~6/5~"]},
+{e:"{ (~1/3~)^2 · 18 − [ 2 − ( ~3/2~ − ~1/4~ ) ] } ÷ ~3/4~",a:"5/3",s:["Paréntesis: ~3/2~ − ~1/4~ = ~6/4~ − ~1/4~ = ~5/4~","Corchetes: 2 − ~5/4~ = ~8/4~ − ~5/4~ = ~3/4~","Potencia y producto: (~1/3~)^2 = ~1/9~;  ~1/9~ · 18 = 2","Llaves: 2 − ~3/4~ = ~8/4~ − ~3/4~ = ~5/4~","División: ~5/4~ ÷ ~3/4~ = ~5/4~ · ~4/3~ = ~5/3~"]},
+{e:"~2/3~ + { (−1)^4 − (~1/2~)^2 ÷ ~1/8~ } · ~3/4~",a:"-1/12",s:["Potencias: (−1)^4 = 1;  (~1/2~)^2 = ~1/4~","División: ~1/4~ ÷ ~1/8~ = ~1/4~ · 8 = 2","Llaves: 1 − 2 = −1","Multiplicación: −1 · ~3/4~ = ~-3/4~","Suma: ~2/3~ − ~3/4~ = ~8/12~ − ~9/12~ = ~-1/12~"]},
+{e:"5 − [ 3^2 ÷ 12 + ( ~1/2~ − ~2/3~ ) ] ÷ ~1/6~",a:"3/2",s:["Paréntesis: ~1/2~ − ~2/3~ = ~3/6~ − ~4/6~ = ~-1/6~","Potencia y división: 3^2 = 9;  9 ÷ 12 = ~3/4~","Corchetes: ~3/4~ + (~-1/6~) = ~9/12~ − ~2/12~ = ~7/12~","División: ~7/12~ ÷ ~1/6~ = ~7/12~ · 6 = ~42/12~ = ~7/2~","Resta: 5 − ~7/2~ = ~10/2~ − ~7/2~ = ~3/2~"]},
+{e:"{ (−~2/3~)^2 ÷ ~4/9~ − [ ~1/2~ − ( 1 − ~3/4~ ) ] } ÷ ~3/2~ − ~5/6~",a:"-1/3",s:["Paréntesis: 1 − ~3/4~ = ~1/4~","Corchetes: ~1/2~ − ~1/4~ = ~1/4~","Potencia y división: (−~2/3~)^2 = ~4/9~;  ~4/9~ ÷ ~4/9~ = 1","Llaves: 1 − ~1/4~ = ~3/4~","División: ~3/4~ ÷ ~3/2~ = ~3/4~ · ~2/3~ = ~6/12~ = ~1/2~","Resta: ~1/2~ − ~5/6~ = ~3/6~ − ~5/6~ = ~-2/6~ = ~-1/3~"]},
+{e:"[ (−3)^5 · (−3)^2 ÷ (−3)^6 ] + [ (~1/2~)^3 · (~1/2~)^2 ÷ (~1/2~)^4 ]",a:"-5/2",s:["Misma base: en el producto se suman los exponentes y en la división se restan.","Primer corchete: (−3)^(5+2-6) = (−3)^1 = −3","Segundo corchete: (~1/2~)^(3+2-4) = (~1/2~)^1 = ~1/2~","Suma: −3 + ~1/2~ = ~-6/2~ + ~1/2~ = ~-5/2~"]},
+{e:"[ 2^5 · 2^3 ÷ 2^6 ] − [ 3^4 ÷ 3^2 ]",a:"-5/1",s:["Primer corchete: 2^(5+3-6) = 2^2 = 4","Segundo corchete: 3^(4-2) = 3^2 = 9","Resta: 4 − 9 = −5"]},
+{e:"(~2/3~)^4 ÷ (~2/3~)^2 + (~2/3~)^3 ÷ (~2/3~)^2",a:"10/9",s:["Primera división: (~2/3~)^(4-2) = (~2/3~)^2 = ~4/9~","Segunda división: (~2/3~)^(3-2) = (~2/3~)^1 = ~2/3~","Suma: ~4/9~ + ~2/3~ = ~4/9~ + ~6/9~ = ~10/9~"]},
+{e:"(−2)^3 · (−2)^4 ÷ (−2)^5 − 5^3 ÷ 5^2",a:"-1/1",s:["Primer grupo: (−2)^(3+4-5) = (−2)^2 = 4","Segundo grupo: 5^(3-2) = 5^1 = 5","Resta: 4 − 5 = −1"]},
+{e:"[ (~1/3~)^2 · (~1/3~)^3 ÷ (~1/3~)^4 ] + ~1/6~",a:"1/2",s:["Corchete: (~1/3~)^(2+3-4) = (~1/3~)^1 = ~1/3~","Suma: ~1/3~ + ~1/6~ = ~2/6~ + ~1/6~ = ~3/6~ = ~1/2~"]},
+{e:"[ 5^6 ÷ 5^4 ] ÷ 5 + 3^5 ÷ 3^6",a:"16/3",s:["Corchete: 5^(6-4) = 5^2 = 25;  25 ÷ 5 = 5","División: 3^(5-6) = 3^(-1) = ~1/3~","Suma: 5 + ~1/3~ = ~15/3~ + ~1/3~ = ~16/3~"]},
+{e:"(−~1/2~)^3 · (−~1/2~)^2 ÷ (−~1/2~)^4 + ~3/4~",a:"1/4",s:["Potencias: (−~1/2~)^(3+2-4) = (−~1/2~)^1 = ~-1/2~","Suma: ~-1/2~ + ~3/4~ = ~-2/4~ + ~3/4~ = ~1/4~"]},
+{e:"3^2 · 3^4 ÷ 3^3 ÷ 3^2 − 2^3 ÷ 2^5",a:"11/4",s:["Primer grupo: 3^(2+4-3-2) = 3^1 = 3","Segundo grupo: 2^(3-5) = 2^(-2) = ~1/4~","Resta: 3 − ~1/4~ = ~12/4~ − ~1/4~ = ~11/4~"]},
+{e:"(~3/4~)^2 ÷ (~3/4~)^3 − (~3/4~)^5 ÷ (~3/4~)^4",a:"7/12",s:["Primera división: (~3/4~)^(2-3) = (~3/4~)^(-1) = ~4/3~","Segunda división: (~3/4~)^(5-4) = (~3/4~)^1 = ~3/4~","Resta: ~4/3~ − ~3/4~ = ~16/12~ − ~9/12~ = ~7/12~"]},
+{e:"[ 7^4 ÷ 7^2 ÷ 7 ] − [ (−2)^6 ÷ (−2)^4 ] + ~1/2~",a:"7/2",s:["Primer corchete: 7^(4-2-1) = 7^1 = 7","Segundo corchete: (−2)^(6-4) = (−2)^2 = 4","Suma y resta: 7 − 4 + ~1/2~ = 3 + ~1/2~ = ~7/2~"]},
+{e:"√(~25/4~) − ∛(~27/8~) ÷ √(~9/16~)",a:"1/2",s:["Raíces: √(~25/4~) = ~5/2~ porque (~5/2~)^2 = ~25/4~;  ∛(~27/8~) = ~3/2~ porque (~3/2~)^3 = ~27/8~;  √(~9/16~) = ~3/4~ porque (~3/4~)^2 = ~9/16~","División: ~3/2~ ÷ ~3/4~ = ~3/2~ · ~4/3~ = ~12/6~ = 2","Resta: ~5/2~ − 2 = ~5/2~ − ~4/2~ = ~1/2~"]},
+{e:"∛(−8) · √(~1/4~) + √(~49/9~) ÷ 7",a:"-2/3",s:["Raíces: ∛(−8) = −2 porque (−2)^3 = −8;  √(~1/4~) = ~1/2~;  √(~49/9~) = ~7/3~ porque (~7/3~)^2 = ~49/9~","Multiplicación y división (izq. a der.): −2 · ~1/2~ = −1;  ~7/3~ ÷ 7 = ~7/3~ · ~1/7~ = ~1/3~","Suma: −1 + ~1/3~ = ~-3/3~ + ~1/3~ = ~-2/3~"]},
+{e:"[ √(~16/9~) − ∛(~1/27~) ] · √(~81/4~) − 3",a:"3/2",s:["Raíces: √(~16/9~) = ~4/3~;  ∛(~1/27~) = ~1/3~ porque (~1/3~)^3 = ~1/27~;  √(~81/4~) = ~9/2~","Corchetes: ~4/3~ − ~1/3~ = ~3/3~ = 1","Multiplicación: 1 · ~9/2~ = ~9/2~","Resta: ~9/2~ − 3 = ~9/2~ − ~6/2~ = ~3/2~"]},
+{e:"√(~1/2~ + ~1/16~) + ∛(~-1/8~) ÷ (~1/2~)^2",a:"-5/4",s:["Dentro de la raíz: ~1/2~ + ~1/16~ = ~8/16~ + ~1/16~ = ~9/16~;  √(~9/16~) = ~3/4~","Otras raíces y potencia: ∛(~-1/8~) = ~-1/2~ porque (~-1/2~)^3 = ~-1/8~;  (~1/2~)^2 = ~1/4~","División: ~-1/2~ ÷ ~1/4~ = ~-1/2~ · 4 = −2","Suma: ~3/4~ + (−2) = ~3/4~ − ~8/4~ = ~-5/4~"]},
+{e:"∛(~8/27~) · { √(~25/16~) − ( 3 − √4 ) } + √(~1/36~)",a:"1/3",s:["Raíces: ∛(~8/27~) = ~2/3~ porque (~2/3~)^3 = ~8/27~;  √(~25/16~) = ~5/4~;  √4 = 2;  √(~1/36~) = ~1/6~","Paréntesis: 3 − 2 = 1","Llaves: ~5/4~ − 1 = ~5/4~ − ~4/4~ = ~1/4~","Multiplicación: ~2/3~ · ~1/4~ = ~2/12~ = ~1/6~","Suma: ~1/6~ + ~1/6~ = ~2/6~ = ~1/3~"]},
+{e:"2√12 − √27 + 3√48 − √75",a:"8√3",w:["6√3","10√3","4√3"],s:["Se simplifica cada radical sacando cuadrados perfectos:","2√12 = 2√(4·3) = 2·2√3 = 4√3","√27 = √(9·3) = 3√3","3√48 = 3√(16·3) = 3·4√3 = 12√3","√75 = √(25·3) = 5√3","Se suman los coeficientes: (4 − 3 + 12 − 5)√3 = 8√3"]},
+{e:"√50 − 3√8 + √18",a:"2√2",w:["4√2","√2","2√6"],s:["√50 = √(25·2) = 5√2","3√8 = 3√(4·2) = 3·2√2 = 6√2","√18 = √(9·2) = 3√2","Se suman los coeficientes: (5 − 6 + 3)√2 = 2√2"]},
+{e:"4√20 − 2√45 + √5",a:"3√5",w:["5√5","9√5","√5"],s:["4√20 = 4√(4·5) = 4·2√5 = 8√5","2√45 = 2√(9·5) = 2·3√5 = 6√5","Se suman los coeficientes: (8 − 6 + 1)√5 = 3√5"]},
+{e:"3√28 − √63 + 2√7 − √112",a:"√7",w:["3√7","2√7","6√7"],s:["3√28 = 3√(4·7) = 3·2√7 = 6√7","√63 = √(9·7) = 3√7","√112 = √(16·7) = 4√7","Se suman los coeficientes: (6 − 3 + 2 − 4)√7 = 1√7 = √7"]},
+{e:"√32 + √12 − √8 + 2√27",a:"2√2+8√3",w:["10√5","4√2+8√3","2√2+6√3"],s:["√32 = √(16·2) = 4√2;  √12 = √(4·3) = 2√3","√8 = √(4·2) = 2√2;  2√27 = 2√(9·3) = 2·3√3 = 6√3","Se agrupan los radicales semejantes: (4 − 2)√2 + (2 + 6)√3","Resultado: 2√2 + 8√3"]}
+];
+const g=(a,b)=>b?g(b,a%b):Math.abs(a);
+const fm=(n,d)=>{const k=g(n,d)||1;n/=k;d/=k;if(d<0){n=-n;d=-d}return n+'/'+d};
+const sh=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const show=v=>{if(v.includes('√'))return v;const[n,d]=v.split('/');return R(d==='1'?n:`~${n}/${d}~`)};
+function opts(c,w){if(w)return sh([c,...w]);const[n,d]=c.split('/').map(Number);
+ const cand=[fm(-n,d),fm(n+d,d),fm(n-d,d),fm(n+1,d),fm(n,d*2),fm(n*2,d),fm(d,n||1),fm(n+d,d*2)];
+ const u=[...new Set(cand)].filter(x=>x!==c);
+ return sh([c,...sh(u).slice(0,3)])}
+let i=0,score=0,done=false;const app=document.getElementById('app');
+function start(){i=0;score=0;render()}
+function render(){
+ if(i>=EX.length)return end();
+ const x=EX[i];done=false;
+ app.innerHTML=`<h1>${i<5?'Operaciones combinadas':i<15?'Potencias de igual base':i<20?'Operaciones con raíces':'Suma y resta de radicales'}</h1><div class="mu">Pregunta ${i+1} de ${EX.length} · Aciertos: ${score}</div>
+ <div class="bar"><i style="width:${i/EX.length*100}%"></i></div>
+ <div class="mu">Resuelve y elige la respuesta correcta:</div>
+ <div class="ex">${R(x.e)}</div>
+ <div class="opts">${opts(x.a,x.w).map(o=>`<button class="opt" data-v="${o}">${show(o)}</button>`).join('')}</div>
+ <div id="fb"></div>`;
+ app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(b));
+}
+function pick(b){
+ if(done)return;done=true;const x=EX[i],v=b.dataset.v,fb=document.getElementById('fb');
+ app.querySelectorAll('.opt').forEach(o=>{o.disabled=true;if(o.dataset.v===x.a)o.classList.add('ok')});
+ if(v===x.a){score++;fb.innerHTML=`<div class="fb ok">✅ ¡Respuesta correcta!</div>`}
+ else{b.classList.add('ko');fb.innerHTML=`<div class="fb ko"><h3>❌ Respuesta incorrecta</h3>La respuesta correcta es <b>${show(x.a)}</b>. Procedimiento:<ol>${x.s.map(s=>`<li>${R(s)}</li>`).join('')}</ol></div>`}
+ fb.innerHTML+=`<button class="btn" id="nx">${i==EX.length-1?'Ver mi nota final':'Siguiente'}</button>`;
+ document.getElementById('nx').onclick=()=>{i++;render()};
+}
+function end(){
+ const m=score>=9?'¡Excelente trabajo! 🏆':score>=7?'¡Muy bien! 👏':score>=5?'Vas bien, repasa los errores. 💪':'Sigue practicando, ¡tú puedes! 📘';
+ app.innerHTML=`<h1>Resultado final</h1><div class="bar"><i style="width:100%"></i></div>
+ <div class="big">${score} / ${EX.length}</div>
+ <p style="text-align:center">Aciertos: <b>${score}</b> · Errores: <b>${EX.length-score}</b><br>Nota: <b>${score} sobre ${EX.length}</b></p>
+ <p style="text-align:center">${m}</p><div style="text-align:center"><button class="btn" id="rs">Intentar de nuevo</button></div>`;
+ document.getElementById('rs').onclick=start;
+}
+start();
+</script></body></html>
